@@ -1,14 +1,10 @@
 steps:
-  # Build Docker image
   - name: "gcr.io/cloud-builders/docker"
-    dir: "backend"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/futsal-app-be", "."]
 
-  # Push image
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/futsal-app-be"]
 
-  # Deploy ke Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
     args:
       [
