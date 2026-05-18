@@ -1,13 +1,12 @@
 const redis = require("redis");
 require("dotenv").config();
 
-// Debug: Cek apakah variable env terbaca
 console.log("🔍 Mencoba menyambung Redis ke:", process.env.REDIS_HOST);
 
 const client = redis.createClient({
-    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_P}`,
     socket: {
-        connectTimeout: 10000, // Tambahkan ini agar tidak cepat menyerah (10 detik)
+        connectTimeout: 10000,
         reconnectStrategy: (retries) => {
             if (retries > 10) return new Error("Gagal total nyambung ke Redis");
             return Math.min(retries * 100, 3000);
