@@ -1,0 +1,84 @@
+### Root URL Testing
+GET http://localhost:3000/ HTTP/1.1
+
+#########################################
+# USER API (Penyewa & Pengelola)
+#########################################
+
+### GET : All Users (Untuk Admin)
+GET http://localhost:3000/api/v1/users HTTP/1.1
+Content-Type: application/json
+
+### GET : User by ID
+GET http://localhost:3000/api/v1/users/1 HTTP/1.1
+Content-Type: application/json
+
+### POST : Register User Baru
+POST http://localhost:3000/api/v1/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "Adam Fauzan",
+  "email": "adam@student.com",
+  "nomor_hp": "0899887766",
+  "role": "penyewa"
+}
+
+### PUT : Update Profil User
+PUT http://localhost:3000/api/v1/users/update/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "Adam Fauzan Waskito",
+  "email": "adam.waskito@example.com",
+  "nomor_hp": "08123456789"
+}
+
+### DELETE : Hapus User
+DELETE http://localhost:3000/api/v1/users/1 HTTP/1.1
+
+#########################################
+# LAPANGAN API
+#########################################
+
+### GET : All Lapangan
+GET http://localhost:3000/api/v1/lapangan HTTP/1.1
+
+### POST : Tambah Lapangan Baru
+POST http://localhost:3000/api/v1/lapangan HTTP/1.1
+Content-Type: application/json
+
+{
+  "nama_lapangan": "Lapangan Utama (Vinyl)",
+  "jenis_rumput": "Vinyl/Interlock",
+  "harga_per_jam": 150000
+}
+
+#########################################
+# BOOKING API (Jantung Aplikasi)
+#########################################
+
+### GET : Cek Ketersediaan (Panggil Redis)
+GET http://localhost:3000/api/v1/booking/check?lapanganId=1&tanggal=2026-05-20 HTTP/1.1
+
+### POST : Create Booking (Tes Anti-Bentrok)
+POST http://localhost:3000/api/v1/booking/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "lapanganId": 1,
+  "tanggal": "2026-05-20",
+  "jam_mulai": "19:00:00",
+  "jam_selesai": "20:00:00",
+  "total_harga": 150000
+}
+
+### PUT : Konfirmasi Pembayaran DP
+PUT http://localhost:3000/api/v1/booking/confirm/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "jumlah_dp": 50000,
+  "bukti_transfer": "link_foto_bukti_tf.jpg"
+}

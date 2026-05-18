@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data User</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 24px;
+      }
+
+      form {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: end;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      input {
+        padding: 6px 8px;
+      }
+
+      button {
+        padding: 7px 12px;
+        cursor: pointer;
+      }
+
+      table {
+        margin-top: 16px;
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 800px;
+      }
+
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 8px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Data User</h1>
+
+    <form id="user-form">
+      <div>
+        <label for="name">Nama</label>
+        <input
+          id="name"
+          data-id=""
+          type="text"
+          placeholder="Masukkan nama"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="Masukkan email"
+          required
+        />
+      </div>
+
+      <button type="submit">Simpan</button>
+    </form>
+
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th colspan="2">Opsi</th>
+          </tr>
+        </thead>
+        <tbody id="table-user"></tbody>
+      </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
