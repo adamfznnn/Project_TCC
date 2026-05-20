@@ -31,13 +31,18 @@ app.use("/api/v1/booking", bookingRoutes);
 
 const port = process.env.PORT || 3000;
 
-sequelize.sync({ alter: true }).then(() => {
+app.listen(port, "0.0.0.0", () => {
   console.log("------------------------------------------");
-  console.log("✅ Database Connected (Cloud SQL / MariaDB)");
-  app.listen(port, "0.0.0.0", () => {
-    console.log(`🚀 Server running on port ${port}`);
-    console.log("------------------------------------------");
-  });
-}).catch(err => {
-  console.error("❌ Unable to connect to Database:", err);
+  console.log(`🚀 Server running and listening on port ${port}`);
+  console.log("------------------------------------------");
+
+  console.log("🔄 Connecting to database...");
+  sequelize.sync({ alter: true })
+    .then(() => {
+      console.log("✅ Database Connected & Synced Successfully");
+    })
+    .catch(err => {
+      console.error("❌ Unable to connect to Database:", err.message);
+      console.log("⚠️ Aplikasi tetap jalan, tapi API yang butuh DB akan error sampai koneksi VM aman.");
+    });
 });
