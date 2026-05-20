@@ -1,4 +1,4 @@
-const Lapangan = require("../schema/Lapangan");
+const Lapangan = require("../schema/lapangan");
 
 // Ambil semua daftar lapangan (untuk ditampilkan di Mobile/Web)
 const findAll = async () => {

@@ -22,8 +22,8 @@ app.get("/", (req, res) => {
 });
 
 const User = require("./schema/User");
-const Lapangan = require("./schema/Lapangan");
-const Booking = require("./schema/Booking");
+const Lapangan = require("./schema/lapangan");
+const Booking = require("./schema/booking");
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/lapangan", lapanganRoutes);

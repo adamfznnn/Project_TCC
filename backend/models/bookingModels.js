@@ -1,6 +1,6 @@
-const Booking = require("../schema/Booking");
+const Booking = require("../schema/booking");
 const User = require("../schema/User");
-const Lapangan = require("../schema/Lapangan");
+const Lapangan = require("../schema/lapangan");
 
 // Ambil semua data booking (untuk laporan pengelola)
 const findAll = async () => {
