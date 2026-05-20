@@ -29,7 +29,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/lapangan", lapanganRoutes);
 app.use("/api/v1/booking", bookingRoutes);
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 sequelize.sync({ alter: true }).then(() => {
   console.log("------------------------------------------");
