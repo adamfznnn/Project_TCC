@@ -19,6 +19,10 @@ const findById = async (id) => {
   });
 };
 
+const findOne = async (condition) => {
+  return await User.findOne(condition); // ikut ambil password untuk verifikasi
+};
+
 const updateById = async (id, userData) => {
   // Update data user (misal penyewa ingin ganti nomor HP)
   await User.update(userData, {

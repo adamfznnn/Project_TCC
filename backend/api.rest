@@ -18,8 +18,9 @@ POST http://localhost:3000/api/v1/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "Adam Fauzan",
-  "email": "adam@student.com",
+  "username": "adminfutsal",
+  "email": "adminfutsal@gmail.com",
+  "password": "jawa",
   "nomor_hp": "0899887766",
   "role": "penyewa"
 }

@@ -20,20 +20,21 @@ const User = sequelize.define("User", {
       isEmail: true
     },
   },
-  // Tambahan kolom untuk koordinasi booking
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   nomor_hp: {
     type: DataTypes.STRING,
-    allowNull: true, // Bisa diset false jika wajib
+    allowNull: true,
   },
-  // Tambahan kolom untuk membedakan hak akses (Web Pengelola vs Mobile Penyewa)
   role: {
     type: DataTypes.ENUM("admin", "penyewa"),
     defaultValue: "penyewa",
   },
 }, {
-  // Opsi tambahan
-  freezeTableName: true, // Memastikan nama tabel di MariaDB tetap 'User'
-  timestamps: true,      // Menambahkan createdAt dan updatedAt otomatis
+  freezeTableName: true,
+  timestamps: true,
 });
 
 module.exports = User;
