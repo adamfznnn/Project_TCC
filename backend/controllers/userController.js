@@ -1,5 +1,6 @@
 const userModel = require("../models/userModels");
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
 
 // Mendapatkan semua user
 const getAllUsers = async (req, res) => {
@@ -75,8 +76,17 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Password salah" });
     }
 
-    res.status(200).json({
+    // ✅ Generate token DI SINI, sebelum res.json
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'secret_key',
+      { expiresIn: '7d' }
+    );
+
+    // ✅ Kirim token bersama data user, SATU res.json saja
+    return res.status(200).json({
       message: "Login berhasil",
+      token,
       user: {
         id: user.id,
         username: user.username,
@@ -85,6 +95,7 @@ const login = async (req, res) => {
         role: user.role,
       },
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Login gagal",

@@ -111,6 +111,16 @@ const confirmPayment = async (req, res) => {
     }
 };
 
+const getBookingsByUser = async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const bookings = await BookingModel.findAll({ where: { userId } });
+    res.status(200).json({ message: "OK", data: bookings });
+  } catch (err) {
+    res.status(500).json({ message: "Gagal ambil data", error: err.message });
+  }
+};
+
 module.exports = {
     checkAvailability,
     createBooking,
