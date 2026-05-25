@@ -6,6 +6,8 @@ require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const lapanganRoutes = require("./routes/lapanganRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const pembayaranRoutes = require("./routes/pembayaranRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
@@ -24,10 +26,14 @@ app.get("/", (req, res) => {
 const User = require("./schema/User");
 const Lapangan = require("./schema/lapangan");
 const Booking = require("./schema/booking");
+const Pembayaran = require("./schema/pembayaran");
+const Review = require("./schema/review");
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/lapangan", lapanganRoutes);
 app.use("/api/v1/booking", bookingRoutes);
+app.use("/api/v1/pembayaran", pembayaranRoutes);
+app.use("/api/v1/review", reviewRoutes);
 
 const port = process.env.PORT || 3000;
 
