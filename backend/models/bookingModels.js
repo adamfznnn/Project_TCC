@@ -24,6 +24,12 @@ const findById = async (id) => {
     });
 };
 
+//  TAMBAHKAN FUNGSI INI
+// Cari satu data berdasarkan kondisi spesifik (misal: cek slot waktu)
+const findOne = async (options) => {
+    return await Booking.findOne(options);
+};
+
 // Update status (misal dari PENDING ke PAID_DP setelah bukti transfer dicek)
 const updateById = async (id, bookingData) => {
     await Booking.update(bookingData, {
@@ -43,6 +49,7 @@ module.exports = {
     findAll,
     create,
     findById,
+    findOne, //  JANGAN LUPA DIEXPORT DI SINI
     updateById,
     deleteById,
 };
