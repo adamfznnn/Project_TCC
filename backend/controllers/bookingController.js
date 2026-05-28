@@ -45,6 +45,8 @@ const createBooking = async (req, res) => {
         if (isOccupied) {
             return res.status(400).json({ message: "Jadwal sudah dipesan oleh orang lain!" });
         }
+        
+        // PERBAIKAN: Mengubah 'PENDING_PAYMENT' menjadi 'PENDING'
         const newBooking = await bookingModel.create({
             userId,
             lapanganId,
@@ -52,8 +54,9 @@ const createBooking = async (req, res) => {
             jam_mulai,
             jam_selesai,
             total_harga,
-            status_pembayaran: 'PENDING_PAYMENT'
+            status_pembayaran: 'PENDING' 
         });
+        
         const lockKey = `lock:booking:${newBooking.id}`;
         await redisClient.setEx(lockKey, 900, "waiting_for_dp");
         await redisClient.del(`jadwal:${lapanganId}:${tanggal}`);
@@ -91,7 +94,7 @@ const getBookingsByUser = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ message: "userId wajib diisi" });
         }
-        const bookings = await bookingModel.findAll({ where: { userId } });  // ← huruf kecil
+        const bookings = await bookingModel.findAll({ where: { userId } });  
         res.status(200).json({ message: "OK", data: bookings });
     } catch (err) {
         res.status(500).json({ message: "Gagal ambil data", error: err.message });
@@ -102,5 +105,5 @@ module.exports = {
     checkAvailability,
     createBooking,
     confirmPayment,
-    getBookingsByUser,  // ← tambahan
+    getBookingsByUser,  
 };
