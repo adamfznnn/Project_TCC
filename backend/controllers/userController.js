@@ -76,14 +76,12 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Password salah" });
     }
 
-    // ✅ Generate token DI SINI, sebelum res.json
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'secret_key',
       { expiresIn: '7d' }
     );
 
-    // ✅ Kirim token bersama data user, SATU res.json saja
     return res.status(200).json({
       message: "Login berhasil",
       token,
@@ -118,16 +116,46 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Update profil
+// Update profil (+ opsional ganti password)
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { username, email, nomor_hp } = req.body;
+  const { username, email, nomor_hp, old_password, new_password } = req.body;
   try {
-    const updatedUser = await userModel.updateById(id, { username, email, nomor_hp });
+    const updatePayload = { username, email, nomor_hp };
+
+    // Jika ada permintaan ganti password
+    if (old_password && new_password) {
+      // Ambil user lengkap dengan password untuk verifikasi
+      const user = await userModel.findOne({ where: { id } });
+      if (!user) {
+        return res.status(404).json({ message: "Pengguna tidak ditemukan" });
+      }
+
+      // Verifikasi password lama
+      const isOldValid = await bcrypt.compare(old_password, user.password);
+      if (!isOldValid) {
+        return res.status(401).json({ message: "Password lama tidak sesuai" });
+      }
+
+      // Hash password baru
+      updatePayload.password = await bcrypt.hash(new_password, 10);
+    }
+
+    const updatedUser = await userModel.updateById(id, updatePayload);
     if (!updatedUser) {
       return res.status(404).json({ message: "Pengguna tidak ditemukan" });
     }
-    res.status(200).json({ message: "Profil diperbarui", data: updatedUser });
+
+    res.status(200).json({
+      message: old_password ? "Profil & password diperbarui" : "Profil diperbarui",
+      data: {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        nomor_hp: updatedUser.nomor_hp,
+        role: updatedUser.role,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Gagal update", error: error.message });
   }
