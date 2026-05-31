@@ -1,7 +1,10 @@
 const pembayaranModel = require("../models/pembayaranModels");
 const bookingModel = require("../models/bookingModels");
+const Pembayaran = require("../schema/pembayaran");
 
 // 1. Upload bukti pembayaran (oleh penyewa)
+// Dipakai jika ingin alur: penyewa submit → admin verifikasi
+// Body: { bookingId, jumlah_bayar, metode_pembayaran, bukti_transfer }
 const createPembayaran = async (req, res) => {
     const { bookingId, jumlah_bayar, metode_pembayaran, bukti_transfer } = req.body;
     try {
@@ -9,11 +12,17 @@ const createPembayaran = async (req, res) => {
         if (!booking) {
             return res.status(404).json({ message: "Booking tidak ditemukan" });
         }
+        if (booking.status_pembayaran === "CANCELLED") {
+            return res.status(400).json({ message: "Booking sudah dibatalkan" });
+        }
+        if (booking.status_pembayaran === "LUNAS") {
+            return res.status(400).json({ message: "Booking sudah lunas, tidak perlu bayar lagi" });
+        }
 
         const pembayaran = await pembayaranModel.create({
             bookingId,
             jumlah_bayar,
-            metode_pembayaran,
+            metode_pembayaran: metode_pembayaran || "TRANSFER",
             bukti_transfer: bukti_transfer || null,
             status: "PENDING",
             tanggal_bayar: new Date(),
@@ -38,7 +47,8 @@ const getAllPembayaran = async (req, res) => {
     }
 };
 
-// 3. Ambil pembayaran berdasarkan bookingId
+// 3. Ambil riwayat pembayaran berdasarkan bookingId
+// Dipakai Flutter untuk menampilkan riwayat transaksi per booking
 const getPembayaranByBooking = async (req, res) => {
     const { bookingId } = req.params;
     try {
@@ -50,6 +60,7 @@ const getPembayaranByBooking = async (req, res) => {
 };
 
 // 4. Verifikasi / Tolak pembayaran (admin)
+// FIX: Akumulasi semua pembayaran VERIFIED sebelum update status booking
 const updateStatusPembayaran = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body; // "VERIFIED" atau "REJECTED"
@@ -62,20 +73,29 @@ const updateStatusPembayaran = async (req, res) => {
         if (!pembayaran) {
             return res.status(404).json({ message: "Data pembayaran tidak ditemukan" });
         }
+        if (pembayaran.status !== "PENDING") {
+            return res.status(400).json({ message: `Pembayaran sudah berstatus ${pembayaran.status}` });
+        }
 
         const updated = await pembayaranModel.updateById(id, { status });
 
-        // Jika VERIFIED, update status booking menjadi PAID_DP atau LUNAS
         if (status === "VERIFIED") {
             const booking = await bookingModel.findById(pembayaran.bookingId);
             if (booking) {
-                const totalSudahBayar = pembayaran.jumlah_bayar;
-                const newStatus = totalSudahBayar >= booking.total_harga ? "LUNAS" : "PAID_DP";
+                // Hitung total semua pembayaran VERIFIED untuk booking ini (termasuk yang baru)
+                const allVerified = await Pembayaran.findAll({
+                    where: { bookingId: pembayaran.bookingId, status: "VERIFIED" }
+                });
+                const totalBayar = allVerified.reduce((sum, p) => sum + p.jumlah_bayar, 0);
+                const newStatus = totalBayar >= booking.total_harga ? "LUNAS" : "PAID_DP";
                 await bookingModel.updateById(pembayaran.bookingId, { status_pembayaran: newStatus });
             }
         }
 
-        res.status(200).json({ message: `Pembayaran berhasil di-${status.toLowerCase()}`, data: updated });
+        res.status(200).json({
+            message: `Pembayaran berhasil di-${status.toLowerCase()}`,
+            data: updated
+        });
     } catch (error) {
         res.status(500).json({ message: "Gagal update status pembayaran", error: error.message });
     }

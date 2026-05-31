@@ -1,10 +1,11 @@
 const Pembayaran = require("../schema/pembayaran");
 const Booking = require("../schema/booking");
 
-// Ambil semua pembayaran (untuk admin/pengelola)
+// Ambil semua pembayaran (untuk admin)
 const findAll = async () => {
     return await Pembayaran.findAll({
-        include: [{ model: Booking }],
+        include: [{ model: Booking, attributes: ["id", "tanggal", "total_harga", "status_pembayaran"] }],
+        order: [["createdAt", "DESC"]],
     });
 };
 
@@ -20,14 +21,15 @@ const findById = async (id) => {
     });
 };
 
-// Cari semua pembayaran milik satu booking
+// Cari semua pembayaran milik satu booking (untuk riwayat transaksi)
 const findByBookingId = async (bookingId) => {
     return await Pembayaran.findAll({
         where: { bookingId },
+        order: [["tanggal_bayar", "DESC"]],
     });
 };
 
-// Update status pembayaran (PENDING -> VERIFIED / REJECTED)
+// Update status pembayaran (PENDING → VERIFIED / REJECTED)
 const updateById = async (id, data) => {
     await Pembayaran.update(data, { where: { id } });
     return await Pembayaran.findByPk(id);

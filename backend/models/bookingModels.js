@@ -2,54 +2,53 @@ const Booking = require("../schema/booking");
 const User = require("../schema/User");
 const Lapangan = require("../schema/lapangan");
 
-// Ambil semua data booking (untuk laporan pengelola)
-const findAll = async () => {
+// Ambil semua booking — menerima options agar bisa difilter (misal: { where: { lapanganId, tanggal } })
+const findAll = async (options = {}) => {
     return await Booking.findAll({
         include: [
             { model: User, attributes: ["username", "nomor_hp"] },
             { model: Lapangan, attributes: ["nama_lapangan"] }
         ],
+        ...options,
     });
 };
 
-// Fungsi utama: Membuat pesanan (digunakan di bookingController)
+// Buat pesanan baru
 const create = async (bookingData) => {
     return await Booking.create(bookingData);
 };
 
-// Cari satu data booking (untuk verifikasi pembayaran DP)
+// Cari satu booking berdasarkan PK (dengan relasi lengkap)
 const findById = async (id) => {
     return await Booking.findByPk(id, {
-        include: [User, Lapangan]
+        include: [
+            { model: User, attributes: ["id", "username", "email", "nomor_hp"] },
+            { model: Lapangan, attributes: ["id", "nama_lapangan", "jenis_rumput", "harga_per_jam"] },
+        ]
     });
 };
 
-//  TAMBAHKAN FUNGSI INI
-// Cari satu data berdasarkan kondisi spesifik (misal: cek slot waktu)
+// Cari satu booking berdasarkan kondisi (cek slot bentrok)
 const findOne = async (options) => {
     return await Booking.findOne(options);
 };
 
-// Update status (misal dari PENDING ke PAID_DP setelah bukti transfer dicek)
+// Update status booking
 const updateById = async (id, bookingData) => {
-    await Booking.update(bookingData, {
-        where: { id: id },
-    });
+    await Booking.update(bookingData, { where: { id } });
     return await Booking.findByPk(id);
 };
 
-// Hapus booking (jika dibatalkan atau tidak bayar DP dalam batas waktu)
+// Hapus booking
 const deleteById = async (id) => {
-    return await Booking.destroy({
-        where: { id: id },
-    });
+    return await Booking.destroy({ where: { id } });
 };
 
 module.exports = {
     findAll,
     create,
     findById,
-    findOne, //  JANGAN LUPA DIEXPORT DI SINI
+    findOne,
     updateById,
     deleteById,
 };
